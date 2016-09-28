@@ -1,0 +1,11 @@
+Package: expat
+Version: @VER@-1
+Description: expat XML parser
+Section:
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://www.libexpat.org
+Source:
+Depends: @DEP@
+Provides: @PROV@

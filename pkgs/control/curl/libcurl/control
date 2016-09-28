@@ -1,0 +1,12 @@
+Package: libcurl
+Version: @VER@-1
+Description: Client-side URL Transfer Library
+Section: base/libraries
+Priority: standard
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://curl.haxx.se
+Source:
+Depends: @DEP@
+Provides: @PROV@
+

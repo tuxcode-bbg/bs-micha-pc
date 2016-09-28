@@ -1,0 +1,11 @@
+Package: fuse-exfat
+Version: @VER@-1
+Description: Free exFAT file system implementation
+Section: base
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: https://github.com/relan/exfat
+Source: https://github.com/relan/exfat/releases
+Depends: @DEP@
+Provides:

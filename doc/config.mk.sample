@@ -1,0 +1,85 @@
+# The type of box to build for.
+# either "nevis", "apollo" or kronos
+# default (if empty) is "nevis"
+PLATFORM=pc
+
+# CROSS_BASE = $(BASE_DIR)/$(CROSS_PATH)
+# default (if empty) is "cross"
+#CROSS_PATH = cross
+
+TARGET_PC=i686-pc-linux-gnu
+BOXARCH = x86
+
+# if /usr/share/libtool/config/config.guess does not supply a valid
+# build type, specify it here. THIS IS A WORKAROUND. Use with caution.
+# BUILD=x86_64-unknown-linux-gnu
+
+# default (if empty) is "neutrino-hd"
+#FLAVOUR = neutrino-hd
+
+## -------------------------------------
+## either "slknet" or "cst"
+## default (if empty) is "slknet"
+GIT_SOURCE = slknet
+## -------------------------------------
+## for GIT_SOURCE = slknet
+## either "https" or "ssh"
+## default for GIT_PROTO (if empty) is "https"
+##
+## for GIT_SOURCE = cst
+## either "git" or "http" or "ssh"
+## default for GIT_PROTO (if empty) is "git"
+GIT_PROTO = https
+## -------------------------------------
+
+# default (if empty) is "cst-next"
+NEUTRINO_WORK_BRANCH_PC = master
+
+#
+# configure the directory where "make dist-pkgs"
+# PKG_DEST_DIR = /srv/www/dist/$(PLATFORM)
+
+#
+# the name used to replace "@MAINT@" in the opkg control files
+# defaults to your name from the passwd GECOS field
+#
+MAINTAINER = micha-bbg
+
+#
+# if you want to use a different source directory, set N_HD_SOURCE here.
+# e.g. check out some test branch to source/nhd-test, then uncomment the
+# following. WARNING: "make update-neutrino" will cease to work, you'll
+# have to do this manually.
+#
+
+N_HD_SOURCE_BASE    = test-neutrino-pc
+N_HD_SOURCE_PC      = $(BASE_DIR)/source/$(N_HD_SOURCE_BASE)
+
+SOURCE_DRIVERS      = cst-public-drivers
+SOURCE_NEUTRINO     = cst-public-gui-neutrino
+SOURCE_NEUTRINO_PC  = test-cst-next
+SOURCE_FFMPEG       = cst-public-libraries-ffmpeg
+SOURCE_KERNEL       = cst-public-linux-kernel
+SOURCE_TOOLS        = cst-public-tools
+#SOURCE_FIRMWARE     = firmware-test
+
+# default (if empty) is "$(HOSTPREFIX)/build-tools"
+# Path for host-buld-tools (make, m4, autoconf, automake, libtool)
+#BUILD_TOOLS =
+
+# default (if empty) is "$(BUILD_TMP)/pc_image"
+#PC_INSTALL=
+
+GCC_OPTIMIZE = normal
+#GCC_OPTIMIZE = size
+#GCC_OPTIMIZE = debug
+
+#FFMPEG_USE_SDL = 1
+
+#NO_CXX11_ABI =
+NO_CXX11_ABI = -D_GLIBCXX_USE_CXX11_ABI=0
+
+# default (if empty) is "/usr/lib"
+#HOST_LIBS = /usr/lib
+
+STB_HAL_AUTO_UPDATE = 1

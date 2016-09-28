@@ -1,0 +1,12 @@
+Package: fuse
+Version: @VER@-1
+Description: Filesystems in userspace
+Section: base
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://fuse.sourceforge.net/
+Source:
+Depends: @DEP@
+Provides: @PROV@
+

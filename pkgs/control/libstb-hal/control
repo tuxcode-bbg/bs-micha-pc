@@ -1,0 +1,12 @@
+Package: libstb-hal
+Version: @VER@-1
+Description: libstb-hal to adapt to many kinds of systems
+Section: base
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: https://github.com/neutrino-mp/libstb-hal
+Source:
+Depends: @DEP@
+Provides: @PROV@
+

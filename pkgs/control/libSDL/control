@@ -1,0 +1,11 @@
+Package: libSDL
+Version: @VER@-1
+Description: libSDL a Simple DirectMedia Layer for low level access to IO hardware via OpenGL.
+Section: extras/libraries
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://libsdl.org
+Source: http://libsdl.org/download-1.2.php
+Depends: @DEP@
+Provides: @PROV@

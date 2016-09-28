@@ -1,0 +1,11 @@
+Package: procps
+Version: @VER@-1
+Description: Full Featured 'top' and 'ps' Tools
+Section: base
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://procps.sourceforge.net/
+Source:
+Depends: @DEP@
+Provides: @PROV@

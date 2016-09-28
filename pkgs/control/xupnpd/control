@@ -1,0 +1,10 @@
+Package: xupnpd
+Version: @VER@-1
+Description: An eXtensible UPnP agent
+Section: extras/servers
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://xupnpd.org
+Source: https://github.com/clark15b/xupnpd
+Depends: @DEP@

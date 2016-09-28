@@ -1,0 +1,12 @@
+Package: curl
+Version: @VER@-1
+Description: Command Line Tool For Transferring Data With URL Syntax
+Section: base
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://curl.haxx.se
+Source:
+Depends: @DEP@
+Provides: 
+

@@ -1,0 +1,12 @@
+Package: openssl-libs
+Version: @VER@-1
+Description: OpenSSL Libraries for SSL Encryption
+Section: base/libraries
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://www.openssl.org/
+Source:
+Depends:
+Provides: @PROV@
+

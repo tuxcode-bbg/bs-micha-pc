@@ -1,0 +1,10 @@
+Package: vsftpd
+Version: @VER@-1
+Description: FTP Daemon
+Section: base
+Priority: optional
+Maintainer: @MAINT@
+Architecture: @ARCH@
+Homepage: http://vsftpd.beasts.org/
+Source:
+Depends: @DEP@
