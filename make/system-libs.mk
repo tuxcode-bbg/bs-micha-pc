@@ -557,23 +557,34 @@ FFMPEG_CONFIGURE = \
 --enable-network \
 --enable-shared \
 --enable-bzlib \
---enable-debug \
---enable-stripping \
 --target-os=linux \
 --enable-cross-compile \
 --cross-prefix=$(TARGET)- \
 --disable-iconv \
---enable-sdl \
 --extra-cflags="-I$(TARGETPREFIX)/include"
 FFMPEG_WORK_BRANCH = ffmpeg-$(FFMPEG_VER)
 FFMPEG_DEPS = $(D)/libxml2
+
 ifeq ($(FFMPEG_USE_SDL), 1)
 FFMPEG_DEPS += $(D)/SDL
-FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -lSDL -L$(TARGETPREFIX)/lib"
+FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -lSDL -L$(TARGETPREFIX)/lib" --enable-sdl
 else
-FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -L$(TARGETPREFIX)/lib"
+FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -L$(TARGETPREFIX)/lib" --disable-sdl
 endif
+
+ifeq ($(FFMPEG_NO_STRIPPING), 1)
+FFMPEG_CONFIGURE += \
+--enable-debug \
+--disable-stripping \
+--disable-optimizations
+else
+FFMPEG_CONFIGURE += \
+--disable-debug \
+--enable-stripping \
+--enable-optimizations
 endif
+
+endif ## ($(PLATFORM), pc)
 
 ifeq ($(BOXARCH), x86)
 FFMPEG_CONFIGURE += --arch=x86 --cpu=i686
@@ -583,7 +594,7 @@ $(D)/ffmpeg: $(D)/ffmpeg-$(FFMPEG_VER)
 	touch $@
 $(D)/ffmpeg-$(FFMPEG_VER): $(FFMPEG_DEPS) $(D)/freetype $(D)/librtmp | $(TARGETPREFIX)
 	if ! test -d $(SOURCE_DIR)/cst-public-libraries-ffmpeg; then \
-		mkdir $(SOURCE_DIR) | true; \
+		mkdir $(SOURCE_DIR) || true; \
 		cd $(SOURCE_DIR); \
 			git clone $(GITSOURCE)/cst-public-libraries-ffmpeg.git && \
 			cd cst-public-libraries-ffmpeg && \
@@ -606,6 +617,8 @@ $(D)/ffmpeg-$(FFMPEG_VER): $(FFMPEG_DEPS) $(D)/freetype $(D)/librtmp | $(TARGETP
 			--prefix=/; \
 		$(MAKE); \
 		make install DESTDIR=$(PKGPREFIX)
+	rm -f $(TARGETPREFIX)/lib/libav*
+	rm -f $(TARGETPREFIX)/lib/libsw*
 	cp -a $(PKGPREFIX)/* $(TARGETPREFIX)
 	if ! test -e $(BUILD_TMP)/ffmpeg-$(FFMPEG_VER)/version.h; then \
 		set -e; cd $(BUILD_TMP)/ffmpeg-$(FFMPEG_VER); \
@@ -623,7 +636,14 @@ $(D)/ffmpeg-$(FFMPEG_VER): $(FFMPEG_DEPS) $(D)/freetype $(D)/librtmp | $(TARGETP
 	rm -rf $(PKGPREFIX)/include $(PKGPREFIX)/share $(PKGPREFIX)/lib/pkgconfig $(PKGPREFIX)/lib/*.so $(PKGPREFIX)/.remove
 	PKG_VER=$(FFMPEG_VER) PKG_PROV=`opkg-find-provides.sh $(PKGPREFIX)` \
 		$(OPKG_SH) $(CONTROL_DIR)/ffmpeg
-	$(REMOVE)/ffmpeg-$(FFMPEG_VER)
+	if [ "$(FFMPEG_NO_STRIPPING)" = "1" ]; then \
+		mkdir -p $(PC_INSTALL); \
+		rm -f $(PC_INSTALL)/usr/lib/libav*; \
+		rm -f $(PC_INSTALL)/usr/lib/libsw*; \
+		cp -frd $(PKGPREFIX_BASE)/. $(PC_INSTALL); \
+	else \
+		$(REMOVE)/ffmpeg-$(FFMPEG_VER); \
+	fi;
 	$(RM_PKGPREFIX)
 	touch $@
 
@@ -1349,6 +1369,8 @@ SDL_CONFIGURE = \
 	--disable-input-tslib
 
 SDL_CONFIGURE_PC = \
+	--enable-audio \
+	--enable-video \
 	--enable-video-x11 \
 	--enable-x11-shared \
 	--enable-dga \
@@ -1382,7 +1404,7 @@ $(D)/SDL: $(ARCHIVE)/SDL-$(LIBSDL_VER).tar.gz | $(TARGETPREFIX)
 		CXXFLAGS="$(TARGET_CXXFLAGS) -I/usr/include $(NO_CXX11_ABI)" \
 		LDFLAGS="$(TARGET_LDFLAGS) -L$(HOST_LIBS)" \
 		LIBS="-L$(HOST_LIBS) -lX11 -lxcb -lXau" \
-		PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) \
+		PKG_CONFIG_PATH="$(HOST_LIBS)/pkgconfig:$(PKG_CONFIG_PATH)" \
 		./configure $(CONFIGURE_OPTS) \
 			$(SDL_CONFIGURE_PC) \
 			--disable-static \
@@ -1405,7 +1427,12 @@ $(D)/SDL: $(ARCHIVE)/SDL-$(LIBSDL_VER).tar.gz | $(TARGETPREFIX)
 		PKG_DEP=`opkg-find-requires.sh $(PKGPREFIX)` \
 		PKG_PROV=`opkg-find-provides.sh $(PKGPREFIX)` \
 			$(OPKG_SH) $(CONTROL_DIR)/libSDL
-	rm -fr $(BUILD_TMP)/SDL-$(LIBSDL_VER) $(PKGPREFIX)
+	if [ "$(FFMPEG_NO_STRIPPING)" = "1" ]; then \
+		cp -frd $(PKGPREFIX_BASE)/. $(PC_INSTALL); \
+	else \
+		rm -fr $(BUILD_TMP)/SDL-$(LIBSDL_VER); \
+	fi;
+	$(RM_PKGPREFIX)
 	touch $@
 
 $(D)/SDL-ttf: $(ARCHIVE)/SDL_ttf-$(SDL_TTF_VER).tar.gz $(D)/SDL $(D)/freetype | $(TARGETPREFIX)
