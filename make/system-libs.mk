@@ -1392,7 +1392,9 @@ SDL_CONFIGURE_PC = \
 	--enable-video-gem \
 	--enable-video-dummy \
 	--enable-video-opengl \
-	--enable-video-fbcon
+	--enable-video-fbcon \
+	--disable-assembly \
+	--disable-nasm
 
 $(D)/SDL: $(ARCHIVE)/SDL-$(LIBSDL_VER).tar.gz | $(TARGETPREFIX)
 	rm -fr $(BUILD_TMP)/SDL-$(LIBSDL_VER)
