@@ -647,6 +647,46 @@ $(D)/ffmpeg-$(FFMPEG_VER): $(FFMPEG_DEPS) $(D)/freetype $(D)/librtmp | $(TARGETP
 	$(RM_PKGPREFIX)
 	touch $@
 
+ifeq ($(FFMPEG_NO_STRIPPING), 1)
+
+FFPLAY_DEBUG   = 1
+FFPLAY_NAME    = ffplay-ext
+FFPLAY_CFLAGS  = -I. -I../ffmpeg-$(FFMPEG_VER) $$(sdl-config --cflags) \
+		 -pipe $(NO_CXX11_ABI) -I$(TARGETPREFIX)/include -I$(TARGETPREFIX_BASE)/include
+ifeq ($(FFPLAY_DEBUG), 1)
+FFPLAY_CFLAGS +=  -O0 -g -ggdb3
+else
+FFPLAY_CFLAGS +=  -O2
+endif
+
+FFPLAY_LDFLAGS = -L$(TARGETPREFIX)/lib -L$(TARGETPREFIX_BASE)/lib -L/lib -L/usr/lib \
+		 -lavdevice -lavfilter -lavformat -lavcodec -lswresample -lswscale -lavutil \
+		 -lbz2 -lz -lpng -lfreetype -lxml2 -lrtmp -lssl -lcrypto -lpthread \
+		 $$(sdl-config --libs) -ldl -lm -lrt
+
+#$(D)/ffplay: $(D)/ffmpeg $(D)/SDL | $(TARGETPREFIX)
+$(D)/ffplay:
+	mkdir -p $(BUILD_TMP)/ffplay
+	make ffplay-clean
+	set -e; cd $(BUILD_TMP)/ffplay; \
+		ln -sf ../ffmpeg-$(FFMPEG_VER)/cmdutils_common_opts.h cmdutils_common_opts.h; \
+		ln -sf ../ffmpeg-$(FFMPEG_VER)/config.h config.h; \
+		$(TARGET)-gcc $(FFPLAY_CFLAGS) -c -o ffplay.o   ffplay.c; \
+		$(TARGET)-gcc $(FFPLAY_CFLAGS) -c -o cmdutils.o cmdutils.c; \
+		$(TARGET)-gcc $(FFPLAY_LDFLAGS) -o $(FFPLAY_NAME) ffplay.o cmdutils.o; \
+		if [ ! "$(FFPLAY_DEBUG)" = "1" ]; then \
+			$(TARGET)-strip $(FFPLAY_NAME); \
+		fi; \
+		cp -f $(FFPLAY_NAME) $(TARGETPREFIX)/bin; \
+		cp -f $(FFPLAY_NAME) $(PC_INSTALL)/usr/bin
+
+$(D)/ffplay-clean:
+	cd $(BUILD_TMP)/ffplay; \
+		rm -f $(FFPLAY_NAME); \
+		rm -f *.o; \
+
+endif		
+
 ncurses-prereq:
 	@if $(MAKE) find-tic find-infocmp ; then \
 		true; \
