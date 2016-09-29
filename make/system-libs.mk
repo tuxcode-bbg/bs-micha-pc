@@ -1678,8 +1678,8 @@ $(D)/libstb-hal: $(D)/openthreads $(D)/ffmpeg $(SOURCE_DIR)/test-libstb-hal-cst-
 		PKG_DEP=`opkg-find-requires.sh $(PKGPREFIX_BASE)` \
 		PKG_PROV=`opkg-find-provides.sh $(PKGPREFIX_BASE)` \
 		$(OPKG_SH) $(CONTROL_DIR)/libstb-hal
-	cp -frd $(PKGPREFIX_BASE)/bin $(BUILD_TMP)/pc_image
-	cp -frd $(PKGPREFIX_BASE)/lib $(BUILD_TMP)/pc_image
+	mkdir -p $(PC_INSTALL)
+	cp -frd $(PKGPREFIX_BASE)/. $(PC_INSTALL)
 	$(REMOVE)/libstb-hal_$(STBHAL_WORK_BRANCH)
 	$(RM_PKGPREFIX)
 	touch $@
