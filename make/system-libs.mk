@@ -564,12 +564,14 @@ FFMPEG_CONFIGURE = \
 --cross-prefix=$(TARGET)- \
 --disable-iconv \
 --enable-sdl \
---extra-cflags="-I$(TARGETPREFIX)/include" \
---extra-ldflags="-lfreetype -lpng -lxml2 -lz -lSDL -L$(TARGETPREFIX)/lib"
+--extra-cflags="-I$(TARGETPREFIX)/include"
 FFMPEG_WORK_BRANCH = ffmpeg-$(FFMPEG_VER)
 FFMPEG_DEPS = $(D)/libxml2
 ifeq ($(FFMPEG_USE_SDL), 1)
 FFMPEG_DEPS += $(D)/SDL
+FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -lSDL -L$(TARGETPREFIX)/lib"
+else
+FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -L$(TARGETPREFIX)/lib"
 endif
 endif
 
