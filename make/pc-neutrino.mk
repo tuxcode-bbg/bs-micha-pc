@@ -1,16 +1,20 @@
 
-#n_play = -vn Middle_of_the_Road_-_Sacramento.mp3
-#n_play = $(PC_INSTALL)/Taxi_Brooklyn.ts
-n_play = $(PC_INSTALL)/Total_Recall.avi
+-include $(BASE_DIR)/make/pc-playfiles.mk
 
-#n_prog = usr/bin/ffprobe
-n_prog = usr/bin/ffplay
+n_play ?= dummy.ts
+n_prog ?= usr/bin/ffplay-ext
 
 play-neutrino:
 	cd $(PC_INSTALL); \
 		export LD_LIBRARY_PATH=$(PC_INSTALL)/lib:$(PC_INSTALL)/usr/lib:$(LD_LIBRARY_PATH); \
 		export PATH=$(PC_INSTALL)/var/bin:$(PC_INSTALL)/var/sbin:$(PC_INSTALL)/usr/bin:$(PC_INSTALL)/usr/sbin:$(PC_INSTALL)/bin:$(PC_INSTALL)/sbin:$(PATH); \
-		$(n_prog) $(n_play)
+		if [ "$(USE_GDB)" = "1" ]; then \
+			rm -f /usr/bin/gdb; \
+			ln -s /Data/coolstream/build/bs-pc/host/bin/gdb /usr/bin/gdb; \
+			ddd $(n_prog); \
+		else \
+			$(n_prog) $(n_play); \
+		fi;
 
 gdb-neutrino:
 	make run-neutrino USE_GDB=1

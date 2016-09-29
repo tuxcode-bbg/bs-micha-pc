@@ -8,3 +8,4 @@ host
 root
 source
 build_tmp
+make/pc-playfiles.mk
