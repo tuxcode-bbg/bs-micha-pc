@@ -560,17 +560,18 @@ FFMPEG_CONFIGURE = \
 --target-os=linux \
 --enable-cross-compile \
 --cross-prefix=$(TARGET)- \
---disable-iconv \
---extra-cflags="-I$(TARGETPREFIX)/include"
+--disable-iconv
 FFMPEG_WORK_BRANCH = ffmpeg-$(FFMPEG_VER)
 FFMPEG_DEPS = $(D)/libxml2
 
 ifeq ($(FFMPEG_USE_SDL), 1)
 FFMPEG_DEPS += $(D)/SDL
-FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -lSDL -L$(TARGETPREFIX)/lib" --enable-sdl
+FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -lX11 -lXext -lxcb -lXau $$(sdl-config --libs) -L$(TARGETPREFIX)/lib -L$(HOST_LIBS)" \
+		--enable-sdl --extra-cflags="-I$(TARGETPREFIX)/include $$(sdl-config --cflags)"
 else
-FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -L$(TARGETPREFIX)/lib" --disable-sdl
-endif
+FFMPEG_CONFIGURE += --extra-ldflags="-lfreetype -lpng -lxml2 -lz -L$(TARGETPREFIX)/lib" \
+		--disable-sdl --extra-cflags="-I$(TARGETPREFIX)/include"
+endif ## ($(FFMPEG_USE_SDL), 1)
 
 ifeq ($(FFMPEG_NO_STRIPPING), 1)
 FFMPEG_CONFIGURE += \
@@ -582,7 +583,7 @@ FFMPEG_CONFIGURE += \
 --disable-debug \
 --enable-stripping \
 --enable-optimizations
-endif
+endif ## ($(FFMPEG_NO_STRIPPING), 1)
 
 endif ## ($(PLATFORM), pc)
 
@@ -669,6 +670,8 @@ $(D)/ffplay:
 	mkdir -p $(BUILD_TMP)/ffplay
 	make ffplay-clean
 	set -e; cd $(BUILD_TMP)/ffplay; \
+		ln -sf ../ffmpeg-$(FFMPEG_VER)/cmdutils.c cmdutils.c; \
+		ln -sf ../ffmpeg-$(FFMPEG_VER)/cmdutils.h cmdutils.h; \
 		ln -sf ../ffmpeg-$(FFMPEG_VER)/cmdutils_common_opts.h cmdutils_common_opts.h; \
 		ln -sf ../ffmpeg-$(FFMPEG_VER)/config.h config.h; \
 		$(TARGET)-gcc $(FFPLAY_CFLAGS) -c -o ffplay.o   ffplay.c; \
@@ -1411,30 +1414,47 @@ SDL_CONFIGURE = \
 SDL_CONFIGURE_PC = \
 	--enable-audio \
 	--enable-video \
-	--enable-video-x11 \
-	--enable-x11-shared \
-	--enable-dga \
-	--enable-video-dga \
-	--enable-video-x11-dgamouse \
-	--enable-video-x11-vm \
-	--enable-video-x11-xv \
-	--enable-video-x11-xinerama \
-	--enable-video-x11-xme \
-	--enable-video-x11-xrandr \
-	--enable-video-photon \
-	--enable-video-cocoa \
-	--enable-video-ps2gs \
-	--enable-video-ps3 \
-	--enable-video-svga \
-	--enable-video-vgl \
-	--enable-video-wscons \
-	--enable-video-xbios \
-	--enable-video-gem \
-	--enable-video-dummy \
-	--enable-video-opengl \
-	--enable-video-fbcon \
-	--disable-assembly \
-	--disable-nasm
+\
+	--disable-joystick \
+	--disable-cdrom \
+	--disable-arts \
+	--disable-arts-shared \
+	--disable-nas \
+	--disable-nas-shared \
+	--disable-diskaudio \
+	--disable-dummyaudio \
+	--disable-mintaudio \
+	--disable-x11-shared \
+	--disable-dga \
+	--disable-video-dga \
+	--disable-video-x11-dgamouse \
+	--disable-video-x11-vm \
+	--disable-video-x11-xv \
+	--disable-video-x11-xinerama \
+	--disable-video-x11-xme \
+	--disable-video-x11-xrandr \
+	--disable-video-photon \
+	--disable-video-cocoa \
+	--disable-video-ps2gs \
+	--disable-video-ps3 \
+	--disable-video-svga \
+	--disable-video-vgl \
+	--disable-video-wscons \
+	--disable-video-xbios \
+	--disable-video-gem \
+	--disable-video-dummy \
+	--disable-video-opengl \
+	--disable-video-directfb \
+	--disable-osmesa-shared \
+	--disable-input-events \
+	--disable-input-tslib \
+	--enable-oss \
+	--enable-alsa \
+	--enable-alsa-shared \
+	--enable-pulseaudio \
+	--enable-pulseaudio-shared \
+	--disable-screensaver \
+	--disable-assembly
 
 $(D)/SDL: $(ARCHIVE)/SDL-$(LIBSDL_VER).tar.gz | $(TARGETPREFIX)
 	rm -fr $(BUILD_TMP)/SDL-$(LIBSDL_VER)
@@ -1445,7 +1465,7 @@ $(D)/SDL: $(ARCHIVE)/SDL-$(LIBSDL_VER).tar.gz | $(TARGETPREFIX)
 		CPPFLAGS="$(TARGET_CPPFLAGS) -I/usr/include $(NO_CXX11_ABI)" \
 		CXXFLAGS="$(TARGET_CXXFLAGS) -I/usr/include $(NO_CXX11_ABI)" \
 		LDFLAGS="$(TARGET_LDFLAGS) -L$(HOST_LIBS)" \
-		LIBS="-L$(HOST_LIBS) -lX11 -lxcb -lXau" \
+		LIBS="-L$(HOST_LIBS) -lX11 -lXext -lxcb -lXau" \
 		PKG_CONFIG_PATH="$(HOST_LIBS)/pkgconfig:$(PKG_CONFIG_PATH)" \
 		./configure $(CONFIGURE_OPTS) \
 			$(SDL_CONFIGURE_PC) \
